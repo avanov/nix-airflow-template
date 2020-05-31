@@ -1,0 +1,10 @@
+repos:
+  - repo: local
+    hooks:
+      - id: mypy
+        name: typechecking
+        description: MyPY typechecking
+        entry: make typecheck
+        language: system
+        types: [python]
+        require_serial: false
