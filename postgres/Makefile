@@ -19,10 +19,9 @@ postgres-local-setup:
 postgres-init: postgres-local-cluster
 	$(MAKE) postgres-start
 	$(MAKE) postgres-local-setup
-	$(MAKE) postgres-stop
 
 postgres-start:
-	pg_ctl start -D $(PG_LOCAL_DB_PATH) -l $(PG_LOCAL_DB_PATH)/logs.log -o "-p $(POSTGRES_PORT)"
+	@if [ -z "$(shell lsof -nti:$(POSTGRES_PORT))" ]; then pg_ctl start -D $(PG_LOCAL_DB_PATH) -l $(PG_LOCAL_DB_PATH)/logs.log -o "-p $(POSTGRES_PORT)"; fi;
 
 postgres-stop:
 	@if ! [ -z "$(shell lsof -nti:$(POSTGRES_PORT))" ]; then pg_ctl stop -D $(PG_LOCAL_DB_PATH) -o "-p $(POSTGRES_PORT)"; fi;

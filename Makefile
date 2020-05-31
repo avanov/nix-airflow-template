@@ -37,10 +37,16 @@ airflow-start:
 
 airflow-stop:
 	@echo "Stopping Airflow gracefully..."
-	cat $(AIRFLOW_SCHEDULER_PIDFILE) | xargs kill -s TERM
+	@if [ -f "$(AIRFLOW_SCHEDULER_PIDFILE)" ]; then cat $(AIRFLOW_SCHEDULER_PIDFILE) | xargs kill -s TERM; fi;
 	@if ! [ -z "$(shell lsof -nti:$(AIRFLOW_WEBSERVER_PORT))" ]; then kill -s TERM $(shell lsof -nti:$(AIRFLOW_WEBSERVER_PORT)); fi;
 	$(MAKE) postgres-stop
 	@echo "Done."
 
 typecheck:
 	poetry run mypy -p nix-airflow-template
+
+reset:
+	$(MAKE) airflow-stop
+	$(MAKE) postgres-purge
+	rm -rvf $(PROJECT_LOCAL)/logs
+	$(MAKE) init
